@@ -1,0 +1,108 @@
+Sub stocks():
+
+    For Each ws In Worksheets
+
+        ws.Range("I1").Value = "Ticker"
+        ws.Range("J1").Value = "Yearly Change"
+        ws.Range("K1").Value = "Percent Change"
+        ws.Range("L1").Value = "Total Stock Volume"
+        ws.Range("O2").Value = "Greatest % Increase"
+        ws.Range("O3").Value = "Greatest % Decrease"
+        ws.Range("O4").Value = "Greatest Total Volume"
+        ws.Range("P1").Value = "Ticker"
+        ws.Range("Q1").Value = "Value"
+
+        Dim tickerName As String
+        Dim lastRow As Long
+        Dim totalVol As Double
+        totalVol = 0
+        Dim newTable As Long
+        newTable = 2
+        Dim openValue As Double
+        Dim closeValue As Double
+        Dim yearlyChange As Double
+        Dim lastNumber As Long
+        lastNumber = 2
+        Dim percentChange As Double
+        Dim maxIncrease As Double
+        maxIncrease = 0
+        Dim maxDecrease As Double
+        maxDecrease = 0
+        Dim lastValue As Long
+        Dim maxVol As Double
+        maxVol = 0
+
+        lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        For i = 2 To lastRow
+
+            totalVol = totalVol + ws.Cells(i, 7).Value
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+
+
+                tickerName = ws.Cells(i, 1).Value
+                ws.Range("I" & newTable).Value = tickerName
+                ws.Range("L" & newTable).Value = totalVol
+                totalVol = 0
+
+
+                openValue = ws.Range("C" & lastNumber)
+                closeValue = ws.Range("F" & i)
+                yearlyChange = closeValue - openValue
+                ws.Range("J" & newTable).Value = yearlyChange
+
+    
+                If openValue = 0 Then
+                    percentChange = 0
+                Else
+                    openValue = ws.Range("C" & lastNumber)
+                    percentChange = yearlyChange / openValue
+                End If
+               
+                ws.Range("K" & newTable).NumberFormat = "0.00%"
+                ws.Range("K" & newTable).Value = percentChange
+
+              
+                If ws.Range("J" & newTable).Value >= 0 Then
+                    ws.Range("J" & newTable).Interior.ColorIndex = 4
+                Else
+                    ws.Range("J" & newTable).Interior.ColorIndex = 3
+                End If
+            
+                newTable = newTable + 1
+                lastNumber = i + 1
+                End If
+            Next i
+
+
+
+            lastRow = ws.Cells(Rows.Count, 11).End(xlUp).Row
+        
+            For i = 2 To lastRow
+                If ws.Range("K" & i).Value > ws.Range("Q2").Value Then
+                    ws.Range("Q2").Value = ws.Range("K" & i).Value
+                    ws.Range("P2").Value = ws.Range("I" & i).Value
+                End If
+
+                If ws.Range("K" & i).Value < ws.Range("Q3").Value Then
+                    ws.Range("Q3").Value = ws.Range("K" & i).Value
+                    ws.Range("P3").Value = ws.Range("I" & i).Value
+                End If
+
+                If ws.Range("L" & i).Value > ws.Range("Q4").Value Then
+                    ws.Range("Q4").Value = ws.Range("L" & i).Value
+                    ws.Range("P4").Value = ws.Range("I" & i).Value
+                End If
+
+            Next i
+    
+            ws.Range("Q2").NumberFormat = "0.00%"
+            ws.Range("Q3").NumberFormat = "0.00%"
+            
+   
+        ws.Columns("I:Q").AutoFit
+
+    Next ws
+
+End Sub
+
